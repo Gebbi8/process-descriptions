@@ -1,0 +1,34 @@
+sudo: required
+
+dist: trusty
+
+services:
+- docker
+
+before_install:
+- docker pull cannin/latex
+- docker run -t -v /home/travis/build/cannin/process-descriptions:/latex -w /latex
+  cannin/latex /bin/sh -c ". /etc/environment && pdflatex --version && ls -l /latex"
+
+# Current directory: /home/travis/build/cannin/process-descriptions
+script:
+- docker run -t -v /home/travis/build/cannin/process-descriptions:/latex -w /latex
+  cannin/latex /bin/sh -c ". /etc/environment && cd /latex/Specification && make"
+- rm -rf tmp && mkdir tmp
+- git config --global user.name "Travis CI" && git config --global user.email "nobody@nobody.org"
+- cd tmp && mkdir travis && cp $TRAVIS_BUILD_DIR/Specification/*.pdf travis
+- git init && git add . && git commit -m "Deploy"
+- git push --verbose --force "https://${GITHUB_TOKEN}@$github.com/${GITHUB_REPO}.git" master:gh-pages > /dev/null 2>&1
+
+deploy:
+  provider: releases
+  file:
+  - Specification/sbgn_PD-level1.pdf
+  skip_cleanup: true
+  on:
+    tags: true
+
+env:
+  global:
+  - GITHUB_REPO: cannin/process-descriptions
+  - secure: a15kyqGJiAbvz4eb2XvzV8jjep4IXUMg7REkPUgstm+cj+kX7qZaKLqTp916MJZnp9Z01FXRJJa6BflTekMlPPGScQZJKu8irjAxou6fxpXJwlEtvWS9Ci5XjIyk21zg6Em/+ANfGeVGDsoKPz1wnJ9Mg37qE5V1IZhlNfYLg2reskNBBWyFjIzns3Ys7Abi5k2mHAoGRTBX6tDQyRRITxs+zJH/lPrgv+0vkNAfO6UF8DOtxQJSf1msntkkEPzBTcTmivLShWenbS4HURLJYIrodjnLXVk6XCV/XkeraruuXn5mkF0ZjrkZQAJBcFo2FrgbZEXTd5qhSLAeemYP5Bx9x8VVmb61TSNVvHkGuFCn7llVUhxEcRb1WlHpAu1eiJ4MvKMpuBsk7SO0ubUBcO4WqeG8h71TokkU4fCr833dW/P6XAIZaniVw+7NoMy60FYLy1oCI4QmpWiRcTZoC5LvBcW4avRa03mdlkEfUwaJqjLPlifS4SoTPD3lSP8IxihfE19mniNBYoa74E/DN6AmQ8gytoMZATwi6bZ91jH3labsUhp4CpifW0PvNoOXPQPgxkUXiiqVkniDCXZmyoUF/C+xoF1DQ6aSLnSedtigaZkOQ6pqd3QbQCLd/KSD0V8Rvsg62gD+RMA1A/a1NbHv/IT4z3S843piUsGSlho=
