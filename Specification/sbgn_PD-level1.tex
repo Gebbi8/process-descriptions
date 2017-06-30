@@ -104,8 +104,21 @@
 }
 \item[\gls{#1}] #2
 }
-
-\newcommand{\umlclasshead}[1]{\subsection{\index{#1}#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\defrules}[2]{\stepcounter{rulescounter}\newglossaryentry{#1}
+{
+    name=110,
+    description={#2}
+}
+\item[\gls{#1}] #2
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\umlclasshead}[1]{\section{\index{#1}#1}}
+\newcommand{\umlsubclasshead}[1]{\subsection{\index{#1}#1}}
+\newcommand{\umlsubsubclasshead}[1]{\subsubsection{\index{#1}#1}}
+\newcommand{\rulesshort}{SHORT}
+\newcounter{rulescounter}
+\newcommand{\leadingzero}[1]{\ifnum\value{#1}<10 0\fi{#1}}
 
 \renewenvironment*{theindex}{\begin{itemize}[label={}]\tightlist\setlength{\itemindent}{-25pt}\nolinenumbers\begin{multicols}{2}}{\end{multicols}\end{itemize}}
 
